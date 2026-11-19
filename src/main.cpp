@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GJBaseGameLayer.hpp>
+#include <Geode/modify/MenuLayer.hpp>
 #include "shared.hpp"
 
 using namespace geode::prelude;
@@ -179,6 +180,7 @@ public:
 
 // Press Y once = open. Press Y again = close.
 static void toggleMenu() {
+	log::info("Hitbox Multiplier: toggling the menu");
 	if (HitboxPopup::s_instance && HitboxPopup::s_instance->getParent()) {
 		HitboxPopup::s_instance->keyBackClicked(); // closes the popup
 		return;
@@ -194,10 +196,12 @@ static void toggleMenu() {
 // ---------------------------------------------------------------
 $on_mod(Loaded) {
 	loadAll();
+	log::info("Hitbox Multiplier: loaded, waiting for the menu key");
 
 	listenForKeybindSettingPresses(
 		"open-menu-key",
 		[](Keybind const&, bool down, bool repeat, double) {
+			log::info("Hitbox Multiplier: menu key event (down={}, repeat={})", down, repeat);
 			if (down && !repeat) toggleMenu();
 		},
 		Mod::get()
@@ -235,5 +239,31 @@ class $modify(HitboxGameLayer, GJBaseGameLayer) {
 			player->setScaleX(oldX);
 			player->setScaleY(oldY);
 		}
+	}
+};
+
+// ---------------------------------------------------------------
+//  A "Hitbox" button on the main menu. Click it to open the menu.
+//  (Works even if the keyboard key does not.)
+// ---------------------------------------------------------------
+class $modify(HitboxMenuLayer, MenuLayer) {
+	bool init() {
+		if (!MenuLayer::init()) return false;
+
+		if (auto menu = this->getChildByID("bottom-menu")) {
+			auto spr = ButtonSprite::create("Hitbox");
+			spr->setScale(0.6f);
+			auto btn = CCMenuItemSpriteExtra::create(
+				spr, this, menu_selector(HitboxMenuLayer::onHitboxMenu)
+			);
+			btn->setID("hitbox-multiplier-button"_spr);
+			menu->addChild(btn);
+			menu->updateLayout();
+		}
+		return true;
+	}
+
+	void onHitboxMenu(CCObject*) {
+		toggleMenu();
 	}
 };
