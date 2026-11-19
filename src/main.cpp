@@ -47,7 +47,7 @@ protected:
 	TextInput* m_wInput = nullptr;
 	TextInput* m_hInput = nullptr;
 
-	bool init() {
+	bool initPopup() {
 		if (!Popup::init(340.f, 240.f)) return false;
 
 		this->setTitle("Hitbox Multiplier");
@@ -163,13 +163,18 @@ protected:
 public:
 	inline static HitboxPopup* s_instance = nullptr;
 
+	// closes the popup (keyBackClicked is protected, so we call it from inside)
+	void closeMe() {
+		this->keyBackClicked();
+	}
+
 	~HitboxPopup() override {
 		if (s_instance == this) s_instance = nullptr;
 	}
 
 	static HitboxPopup* create() {
 		auto ret = new HitboxPopup();
-		if (ret->init()) {
+		if (ret->initPopup()) {
 			ret->autorelease();
 			return ret;
 		}
@@ -182,7 +187,7 @@ public:
 static void toggleMenu() {
 	log::info("Hitbox Multiplier: toggling the menu");
 	if (HitboxPopup::s_instance && HitboxPopup::s_instance->getParent()) {
-		HitboxPopup::s_instance->keyBackClicked(); // closes the popup
+		HitboxPopup::s_instance->closeMe();
 		return;
 	}
 	if (auto popup = HitboxPopup::create()) {
