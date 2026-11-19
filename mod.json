@@ -1,0 +1,17 @@
+{
+	"geode": "6.0.0-alpha.1",
+	"gd": "*",
+	"version": "v1.0.0",
+	"id": "yourname.hitbox-multiplier",
+	"name": "Hitbox Multiplier",
+	"developer": "yourname",
+	"description": "Press Y to open a menu and make your hitbox bigger or smaller.",
+	"settings": {
+		"open-menu-key": {
+			"type": "keybind",
+			"name": "Open Menu Key",
+			"description": "Press this key to open the Hitbox Multiplier menu.",
+			"default": ["Y"]
+		}
+	}
+}
